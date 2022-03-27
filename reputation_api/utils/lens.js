@@ -1,3 +1,5 @@
+import { gqlFetcher } from "./gqlFetcher";
+
 export async function getLensData(address) {
   try {
     let query = `{
@@ -9,29 +11,10 @@ export async function getLensData(address) {
           imageURI
         }
       }`;
-    let response = await fetch(
+    let response = await gqlFetcher(
       "https://api.thegraph.com/subgraphs/id/QmcH6BYapdqB6hqJSVFk4neCYCe94VDkraPRTJxEPb5ULH",
-      {
-        headers: {
-          accept: "*/*",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          query,
-          variables: null,
-        }),
-        method: "POST",
-      }
-    )
-      .then((r) => {
-        return r.json();
-      })
-      .catch((error) => {
-        console.log("getLensData.error", error);
-        return false;
-      });
-
-    console.log("lens", response);
+      query
+    );
 
     if (response["data"]["profiles"].length > 0) {
       return {

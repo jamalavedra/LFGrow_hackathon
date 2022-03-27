@@ -1,26 +1,29 @@
 import { isBlockchainAddress, addressToEns } from "../../utils/stringUtils";
-import { getLensData } from "../../utils/lens";
+import { getPoapData } from "../../utils/poap";
 
 const handler = async (req, res) => {
   try {
     let { address } = req.query;
 
     if (isBlockchainAddress(address) === true) {
-      let resp = [];
+      let resp = {};
+      let reputation = 0;
       let resp_ens = await addressToEns(address);
-      // let resp_lens = await getLensData(address);
-      console.log(resp_lens);
+      let resp_poap = await getPoapData(address);
+
+      if (resp_poap > 0) {
+        resp["poap"] = resp_poap;
+        reputation += 10;
+      }
+
       if (resp_ens !== false) {
-        resp.push({ ens: resp_ens });
+        resp["ens"] = resp_ens;
+        reputation += 10;
       }
-      // if (resp_lens !== false) {
-      //   resp.push({ lens: resp_lens });
-      // }
-      if (resp.length > 0) {
-        return res.status(200).json({ ...resp[0], success: true });
-      } else {
-        return res.status(200).json({});
-      }
+
+      return res
+        .status(200)
+        .json({ data: resp, aura: reputation, success: true });
     } else {
       return res.status(400).json({
         success: false,

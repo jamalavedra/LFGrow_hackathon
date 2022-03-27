@@ -1,5 +1,5 @@
 import { isAddress } from "ethers/lib/utils";
-
+import { gqlFetcher } from "./gqlFetcher";
 export const isBlockchainAddress = (address) => {
   if (isAddress(address) === true) {
     // ethereum
@@ -64,23 +64,10 @@ export async function addressToEns(address) {
         }
     }
     `;
-    let resp = await fetch(
+    let resp = await gqlFetcher(
       "https://api.thegraph.com/subgraphs/name/ensdomains/ens",
-      {
-        headers: {
-          accept: "*/*",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          query,
-          variables: null,
-        }),
-        method: "POST",
-      }
-    ).then((r) => {
-      return r.json();
-    });
-    console.log("ens", resp.data.domains);
+      query
+    );
     if (Boolean(resp["data"]["domains"].length === 0)) {
       return false;
     } else {
