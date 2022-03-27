@@ -1,12 +1,15 @@
-import { isBlockchainAddress } from "@/utils/stringUtils";
+import { isBlockchainAddress, AddressToEns } from "../../utils/stringUtils";
 
 const handler = async (req, res) => {
   try {
     let { address } = req.query;
 
     if (isBlockchainAddress(address) === true) {
-      let resp = await addressToThreadIds(address);
-
+      let resp = [];
+      let resp_ens = await AddressToEns(address);
+      if (resp_ens !== false) {
+        resp.push(resp_ens);
+      }
       if (resp.length > 0) {
         return res.status(200).json({ ...resp[0], success: true });
       } else {
