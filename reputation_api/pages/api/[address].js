@@ -1,4 +1,5 @@
-import { isBlockchainAddress, AddressToEns } from "../../utils/stringUtils";
+import { isBlockchainAddress, addressToEns } from "../../utils/stringUtils";
+import { getLensData } from "../../utils/lens";
 
 const handler = async (req, res) => {
   try {
@@ -6,10 +7,15 @@ const handler = async (req, res) => {
 
     if (isBlockchainAddress(address) === true) {
       let resp = [];
-      let resp_ens = await AddressToEns(address);
+      let resp_ens = await addressToEns(address);
+      // let resp_lens = await getLensData(address);
+      console.log(resp_lens);
       if (resp_ens !== false) {
-        resp.push(resp_ens);
+        resp.push({ ens: resp_ens });
       }
+      // if (resp_lens !== false) {
+      //   resp.push({ lens: resp_lens });
+      // }
       if (resp.length > 0) {
         return res.status(200).json({ ...resp[0], success: true });
       } else {
@@ -22,6 +28,7 @@ const handler = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log("handler.error", error);
     return res.status(500).json({ success: false, error });
   }
 };

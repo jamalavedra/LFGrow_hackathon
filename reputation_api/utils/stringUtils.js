@@ -55,38 +55,15 @@ export async function ensToAddress(ensAddress) {
   }
 }
 
-export async function ensToAddress(ensAddress) {
+export async function addressToEns(address) {
   try {
-    let resp = await fetch(
-      "https://api.thegraph.com/subgraphs/name/ensdomains/ens",
-      {
-        headers: {
-          accept: "*/*",
-          "content-type": "application/json",
-        },
-        body:
-          '{"query":"{\\n  domains(where:{name:\\"' +
-          ensAddress +
-          '\\"}) {\\n    resolvedAddress {\\n      id\\n    }\\n  }\\n}\\n","variables":null}',
-        method: "POST",
-      }
-    ).then((r) => {
-      return r.json();
-    });
-
-    if (Boolean(resp["data"]["domains"][0]["resolvedAddress"]) === false) {
-      return false;
-    } else {
-      return getAddress(resp["data"]["domains"][0]["resolvedAddress"]["id"]);
+    let query = `
+    {
+        domains (where: {resolvedAddress: "${address.toLowerCase()}"}){
+            name
+        }
     }
-  } catch (error) {
-    console.log("ensToAddress.error", error);
-    return false;
-  }
-}
-
-export async function AddressToEns(address) {
-  try {
+    `;
     let resp = await fetch(
       "https://api.thegraph.com/subgraphs/name/ensdomains/ens",
       {
@@ -94,20 +71,27 @@ export async function AddressToEns(address) {
           accept: "*/*",
           "content-type": "application/json",
         },
-        body:
-          '{"query":"{\\n  domains(where:{resolvedAddress:\\"' +
-          address.toLowerCase() +
-          '\\"}) {\\n    name\\n  }\\n}\\n","variables":null}',
+        body: JSON.stringify({
+          query,
+          variables: null,
+        }),
         method: "POST",
       }
     ).then((r) => {
       return r.json();
     });
-
-    if (Boolean(resp["data"]["domains"][0]["name"]) === false) {
+    console.log("ens", resp.data.domains);
+    if (Boolean(resp["data"]["domains"].length === 0)) {
       return false;
     } else {
-      return getAddress(resp["data"]["domains"][0]["name"]);
+      var finalDomain = false;
+      for (var index = 0; index < resp["data"]["domains"].length; index++) {
+        var domain = resp["data"]["domains"][index];
+        if (domain.name.split(".").length == 2) {
+          finalDomain = domain.name;
+        }
+      }
+      return finalDomain;
     }
   } catch (error) {
     console.log("AddressToEns.error", error);
