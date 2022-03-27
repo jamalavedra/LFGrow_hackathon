@@ -47,31 +47,22 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
      * Create a Chainlink request to retrieve API response, find the target
      * data, then multiply by 1000000000000000000 (to remove decimal places from data).
      */
-    function requestVolumeData(address user) public returns (bytes32 requestId) {
+    function requestAuraData(address user) public returns (bytes32 requestId) {
         Chainlink.Request memory request = buildChainlinkRequest(
             jobId,
             address(this),
             this.fulfillMultipleParameters.selector
         );
 
+        string memory result_url =  string(abi.encodePacked('https://lfgrow-aura.vercel.app/api/', abi.encodePacked(user)));
+
         // Set the URL to perform the GET request on
         request.add(
             'get',
-            'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD' 
+            result_url 
         );
-
-        // Set the path to find the desired data in the API response, where the response format is:
-        // {"RAW":
-        //   {"ETH":
-        //    {"USD":
-        //     {
-        //      "VOLUME24HOUR": xxx.xxx,
-        //     }
-        //    }
-        //   }
-        //  }
-        // request.add("path", "RAW.ETH.USD.VOLUME24HOUR"); // Chainlink nodes prior to 1.0.0 support this format
-        request.add('path', 'RAW,ETH,USD,VOLUME24HOUR'); // Chainlink nodes 1.0.0 and later support this format
+        
+        request.add('path', 'aura'); // Chainlink nodes 1.0.0 and later support this format
 
         // Multiply the result by 1000000000000000000 to remove decimals
         int256 timesAmount = 10**18;
