@@ -3,6 +3,7 @@
 ## API reputation endpoint
 
 https://lfgrow-aura.vercel.app/api/ + address
+
 e.g.
 
 ```
