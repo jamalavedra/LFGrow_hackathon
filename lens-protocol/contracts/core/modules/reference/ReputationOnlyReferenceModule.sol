@@ -9,17 +9,6 @@ import '@chainlink/contracts/src/v0.8/ChainlinkClient.sol';
 import 'hardhat/console.sol';
 
 /**
- * @notice A struct containing the necessary data to execute follow actions on a given profile.
- *
- * @param score The min reputations core needed for this profile
- * @param recipient The recipient address associated with this profile.
- */
-struct ProfileData {
-    uint256 score;
-    address recipient;
-}
-
-/**
  * @title ReputationOnlyReferenceModule
  * @author Lens Protocol
  *
@@ -105,7 +94,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
     }
 
     /**
-     * @notice Validates that the commenting profile's owner is a follower.
+     * @notice Validates that the commenting profile's owner has enough reputatino.
      *
      * NOTE: We don't need to care what the pointed publication is in this context.
      */
@@ -115,14 +104,12 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
         uint256 pubIdPointed
     ) external view override {
         address commentCreator = IERC721(HUB).ownerOf(profileId);
-
-        if (_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]) {
+        if (_scoreByAddress[commentCreator]==0||_reputationByAddress[commentCreator]==0||_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]) {
             revert Errors.ReferenceNotAllowed();
         }
     }
 
     /**
-     * @notice Validates that the commenting profile's owner is a follower.
      *
      * NOTE: We don't need to care what the pointed publication is in this context.
      */
