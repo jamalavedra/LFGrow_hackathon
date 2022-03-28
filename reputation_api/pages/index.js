@@ -42,7 +42,7 @@ export default function Home() {
               margin: "0",
             }}
             src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAE3TZ9-y3A&#x2F;view?embed"
-            allowfullscreen="allowfullscreen"
+            allowFullScreen="allowfullscreen"
             allow="fullscreen"
           ></iframe>
         </div>
