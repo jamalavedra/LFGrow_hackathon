@@ -29,8 +29,9 @@ struct ProfileData {
 contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, ModuleBase {
     using Chainlink for Chainlink.Request;
 
-    mapping(uint256 => ProfileData) internal _scoreByProfile;
-    mapping(uint256 => uint256) public _reputationByProfile;
+    mapping(address => uint256) internal _scoreByAddress;
+    mapping(address => uint256) public _reputationByAddress;
+    mapping(bytes32 => address) public _requestToAddress;
 
     address private oracle;
     bytes32 private jobId;
@@ -53,6 +54,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
             address(this),
             this.fulfillMultipleParameters.selector
         );
+        _requestToAddress[request.id] = user;
 
         string memory result_url =  string(abi.encodePacked('https://lfgrow-aura.vercel.app/api/', abi.encodePacked(user)));
 
@@ -77,10 +79,9 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
      */
     function fulfillMultipleParameters(
         bytes32 _requestId,
-        uint256 _volume,
-        uint256 profileId
+        uint256 _aura
     ) public recordChainlinkFulfillment(_requestId) {
-        _reputationByProfile[profileId] = _volume;
+        _reputationByAddress[_requestToAddress[_requestId]] = _aura;
     }
 
     function withdrawLink() external {
@@ -99,8 +100,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
         if (recipient == address(0) || score == 0) revert Errors.InitParamsInvalid();
         // Multiply the result by 1000000000000000000 to remove decimals
         uint256 timesAmount = 10**18;
-        _scoreByProfile[profileId].score = score * timesAmount;
-        _scoreByProfile[profileId].recipient = recipient;
+        _scoreByAddress[recipient] = score * timesAmount;
         return data;
     }
 
@@ -116,7 +116,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
     ) external view override {
         address commentCreator = IERC721(HUB).ownerOf(profileId);
 
-        if (_reputationByProfile[profileId] > _scoreByProfile[profileId].score) {
+        if (_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]) {
             revert Errors.ReferenceNotAllowed();
         }
     }
