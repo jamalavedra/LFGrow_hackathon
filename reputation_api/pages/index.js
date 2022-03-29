@@ -13,6 +13,18 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className="text-3xl font-bold underline">LFGrow my Reputation</h1>
+        <div className="py-8 md:py-12 flex flex-wrap">
+          <p className="text-gray-400 mr-2">
+            {"Connect with us on Twitter at"}
+          </p>
+          <a
+            target="_blank"
+            href="https://twitter.com/alamaslabs"
+            className="rounded border border-blue-400 text-blue-400 p-1 mr-2"
+          >
+            {"@AlamasLabs"}
+          </a>
+        </div>
         <div
           className="max-w-2xl"
           style={{
