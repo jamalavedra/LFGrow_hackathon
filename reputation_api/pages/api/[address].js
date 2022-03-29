@@ -1,5 +1,6 @@
 import { isBlockchainAddress, addressToEns } from "../../utils/stringUtils";
 import { getPoapData } from "../../utils/poap";
+import { checkBrightId } from "../../utils/brightid";
 
 const handler = async (req, res) => {
   try {
@@ -10,9 +11,14 @@ const handler = async (req, res) => {
       let reputation = 0;
       let resp_ens = await addressToEns(address);
       let resp_poap = await getPoapData(address);
+      let resp_brightid = await checkBrightId(address);
 
       if (resp_poap > 0) {
         resp["poap"] = resp_poap;
+        reputation += 10;
+      }
+      resp["brightid"] = resp_brightid;
+      if (resp_brightid) {
         reputation += 10;
       }
 

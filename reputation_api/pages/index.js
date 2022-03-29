@@ -19,6 +19,7 @@ export default function Home() {
           </p>
           <a
             target="_blank"
+            rel="noreferrer"
             href="https://twitter.com/alamaslabs"
             className="rounded border border-blue-400 text-blue-400 p-1 mr-2"
           >
