@@ -18,7 +18,7 @@ import 'hardhat/console.sol';
 contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, ModuleBase {
     using Chainlink for Chainlink.Request;
 
-    mapping(address => uint256) internal _scoreByAddress;
+    mapping(uint256 => uint256) public _scoreByPub;
     mapping(address => uint256) public _reputationByAddress;
     mapping(bytes32 => address) internal _requestToAddress;
 
@@ -85,11 +85,10 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
         uint256 pubId,
         bytes calldata data
     ) external onlyHub returns (bytes memory) {
-        (uint256 score, address recipient) = abi.decode(data, (uint256, address));
-        if (recipient == address(0) || score == 0) revert Errors.InitParamsInvalid();
+        (uint256 score) = abi.decode(data, (uint256));
         // Multiply the result by 1000000000000000000 to remove decimals
         uint256 timesAmount = 10**18;
-        _scoreByAddress[recipient] = score * timesAmount;
+        _scoreByPub[pubId] = score * timesAmount;
         return data;
     }
 
@@ -104,8 +103,8 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
         uint256 pubIdPointed
     ) external view override {
         address commentCreator = IERC721(HUB).ownerOf(profileId);
-        // console.log(commentCreator,_scoreByAddress[commentCreator],_reputationByAddress[commentCreator],_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]);
-        if (_scoreByAddress[commentCreator]==0||_reputationByAddress[commentCreator]==0||_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]) {
+        if (_scoreByPub[pubIdPointed] > _reputationByAddress[commentCreator] ) {
+            console.log("error trigger");
             revert Errors.ReferenceNotAllowed();
         }
     }

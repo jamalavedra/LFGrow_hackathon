@@ -17,22 +17,6 @@ task('test-reference-request', 'tests the ReputationOnlyReferenceModule').setAct
 
   const emptyCollectModuleAddr = addrs['empty collect module'];
 
-    
-  try {
-    await waitForTx(lensHub.connect(user).comment({
-      profileId: 1,
-      contentURI: 'https://ipfs.fleek.co/ipfs/ieiecaca',
-      profileIdPointed: 1,
-      pubIdPointed: 1,
-      collectModule: emptyCollectModuleAddr,
-      collectModuleData: [],
-      referenceModule: ZERO_ADDRESS,
-      referenceModuleData: [],
-    }));
-  } catch (e) {
-    console.log(`Expected failure occurred! Error: ${e}`);
-  }
-
   const reputationOnlyReferenceModuleFactory = await hre.ethers.getContractFactory("ReputationOnlyReferenceModule");
 
   // Get signer information

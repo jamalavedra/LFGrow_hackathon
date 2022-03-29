@@ -42,7 +42,7 @@ task('test-reference-module', 'tests the ReputationOnlyReferenceModule').setActi
   await waitForTx(lensHub.whitelistCollectModule(emptyCollectModuleAddr, true));
   await waitForTx(lensHub.whitelistReferenceModule(reputationOnlyReferenceModule.address, true));
 
-  const data = defaultAbiCoder.encode(['uint256', 'address'], ['10','0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045']);
+  const data = defaultAbiCoder.encode(['uint256'], ['10']);
 
   const inputStruct: PostDataStruct = {
     profileId: 1,
@@ -54,9 +54,6 @@ task('test-reference-module', 'tests the ReputationOnlyReferenceModule').setActi
     referenceModuleData: data,
   };
   await waitForTx(lensHub.connect(user).post(inputStruct));
-  console.log('\n-----------------------\n')
-  console.log(await lensHub.getPub(1, 1));
-
     
   try {
     await waitForTx(lensHub.connect(user).comment({
@@ -69,8 +66,38 @@ task('test-reference-module', 'tests the ReputationOnlyReferenceModule').setActi
       referenceModule: ZERO_ADDRESS,
       referenceModuleData: [],
     }));
+    console.log(`❌ Error occurred!`);
+
   } catch (e) {
-    console.log(`Expected failure occurred! Error: ${e}`);
+    console.log(`✅ Expected failure occurred! Error: ${e}`);
   }
 
+  const data_2 = defaultAbiCoder.encode(['uint256'], ['0']);
+
+  const inputStruct_2: PostDataStruct = {
+    profileId: 1,
+    contentURI:
+      'https://ipfs.fleek.co/ipfs/plantghostplantghostplantghostplantghostplantghostplantghos',
+    collectModule: emptyCollectModuleAddr,
+    collectModuleData: [],
+    referenceModule: reputationOnlyReferenceModule.address,
+    referenceModuleData: data_2,
+  };
+  await waitForTx(lensHub.connect(user).post(inputStruct_2));
+  try {
+    await waitForTx(lensHub.connect(user).comment({
+      profileId: 1,
+      contentURI: 'https://ipfs.fleek.co/ipfs/mecmoc',
+      profileIdPointed: 1,
+      pubIdPointed: 2,
+      collectModule: emptyCollectModuleAddr,
+      collectModuleData: [],
+      referenceModule: ZERO_ADDRESS,
+      referenceModuleData: [],
+    }));
+    console.log(`✅ Success comment`);
+
+  } catch (e) {
+    console.log(`❌ Error occurred! Error: ${e}`);
+  }
 });
