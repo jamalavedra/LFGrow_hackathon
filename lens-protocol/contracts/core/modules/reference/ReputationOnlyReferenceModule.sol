@@ -20,7 +20,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
 
     mapping(address => uint256) internal _scoreByAddress;
     mapping(address => uint256) public _reputationByAddress;
-    mapping(bytes32 => address) public _requestToAddress;
+    mapping(bytes32 => address) internal _requestToAddress;
 
     address private oracle;
     bytes32 private jobId;
@@ -104,7 +104,7 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
         uint256 pubIdPointed
     ) external view override {
         address commentCreator = IERC721(HUB).ownerOf(profileId);
-        console.log(commentCreator,_scoreByAddress[commentCreator],_reputationByAddress[commentCreator],_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]);
+        // console.log(commentCreator,_scoreByAddress[commentCreator],_reputationByAddress[commentCreator],_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]);
         if (_scoreByAddress[commentCreator]==0||_reputationByAddress[commentCreator]==0||_reputationByAddress[commentCreator] > _scoreByAddress[commentCreator]) {
             revert Errors.ReferenceNotAllowed();
         }

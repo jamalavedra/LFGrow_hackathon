@@ -11,6 +11,7 @@ import {
   FeeCollectModule__factory,
   FeeFollowModule__factory,
   FollowerOnlyReferenceModule__factory,
+  ReputationOnlyReferenceModule__factory,
   FollowNFT__factory,
   InteractionLogic__factory,
   LimitedFeeCollectModule__factory,
@@ -188,6 +189,14 @@ task('full-deploy', 'deploys the entire Lens Protocol').setAction(async ({}, hre
     })
   );
 
+    // Deploy reference module
+    console.log('\n\t-- Deploying reputationOnlyReferenceModule --');
+    const reputationOnlyReferenceModule = await deployContract(
+      new ReputationOnlyReferenceModule__factory(deployer).deploy(lensHub.address, {
+        nonce: deployerNonce++,
+      })
+    );
+
   // Whitelist the collect modules
   console.log('\n\t-- Whitelisting Collect Modules --');
   let governanceNonce = await ethers.provider.getTransactionCount(governance.address);
@@ -241,6 +250,15 @@ task('full-deploy', 'deploys the entire Lens Protocol').setAction(async ({}, hre
       .whitelistCurrency(currency.address, true, { nonce: governanceNonce++ })
   );
 
+    // Whitelist the reference module
+    console.log('\n\t-- Whitelisting Reference Module --');
+    await waitForTx(
+      lensHub.whitelistReferenceModule(reputationOnlyReferenceModule.address, true, {
+        nonce: governanceNonce++,
+      })
+    );
+
+
   // Save and log the addresses
   const addrs = {
     'lensHub proxy': lensHub.address,
@@ -261,6 +279,7 @@ task('full-deploy', 'deploys the entire Lens Protocol').setAction(async ({}, hre
     'fee follow module': feeFollowModule.address,
     'approval follow module': approvalFollowModule.address,
     'follower only reference module': followerOnlyReferenceModule.address,
+    'reputation only reference module': reputationOnlyReferenceModule.address,
   };
   const json = JSON.stringify(addrs, null, 2);
   console.log(json);

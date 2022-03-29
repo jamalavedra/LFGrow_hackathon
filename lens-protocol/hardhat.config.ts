@@ -29,10 +29,11 @@ const MNEMONIC = process.env.MNEMONIC || '';
 const MAINNET_FORK = process.env.MAINNET_FORK === 'true';
 const TRACK_GAS = process.env.TRACK_GAS === 'true';
 const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY || '';
+const PRIVATE_KEY = process.env.PRIVATE_KEY || '';
 
 const getCommonNetworkConfig = (networkName: eNetwork, networkId: number) => ({
   url: NETWORKS_RPC_URL[networkName],
-  accounts: {
+  accounts: networkName==='matic'?[PRIVATE_KEY]:{
     mnemonic: MNEMONIC,
     path: MNEMONIC_PATH,
     initialIndex: 0,
@@ -80,7 +81,6 @@ const config: HardhatUserConfig = {
     mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
     xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
     hardhat: {
-      hardfork: 'london',
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
       gas: DEFAULT_BLOCK_GAS_LIMIT,
       gasPrice: 8000000000,
@@ -107,3 +107,4 @@ const config: HardhatUserConfig = {
 };
 
 export default config;
+ 
