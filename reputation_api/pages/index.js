@@ -12,11 +12,18 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className="text-3xl font-bold underline">LFGrow my Reputation</h1>
+        <h1 className="text-4xl font-extrabold">Aura Reputation</h1>
+
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://youtu.be/GaWE33EJFBg?t=3946"
+          className="text-red-400 p-1 mr-2 underline"
+        >
+          {"Hackathon Finale Presentation"}
+        </a>
         <div className="py-8 md:py-12 flex flex-wrap">
-          <p className="text-gray-400 mr-2">
-            {"Connect with us on Twitter at"}
-          </p>
+          <p className="text-gray-400 mr-2">{"Connect with us on Twitter "}</p>
           <a
             target="_blank"
             rel="noreferrer"

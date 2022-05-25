@@ -104,7 +104,6 @@ contract ReputationOnlyReferenceModule is ChainlinkClient, IReferenceModule, Mod
     ) external view override {
         address commentCreator = IERC721(HUB).ownerOf(profileId);
         if (_scoreByPub[pubIdPointed] > _reputationByAddress[commentCreator] ) {
-            console.log("error trigger");
             revert Errors.ReferenceNotAllowed();
         }
     }
